@@ -1,16 +1,10 @@
 import java.util.Scanner;
+import java.util.Stack;
 
-// Strategy Interface
-interface PalindromeStrategy {
-    boolean check(String str);
-}
+public class PalindromeCheckerApp {
 
-// Simple Stack Strategy
-class StackStrategy implements PalindromeStrategy {
-    public boolean check(String str) {
-
-        str = str.replaceAll("\\s+", "").toLowerCase();
-
+    // Method 1: Loop Method
+    public static boolean loopMethod(String str) {
         int n = str.length();
         for (int i = 0; i < n / 2; i++) {
             if (str.charAt(i) != str.charAt(n - 1 - i)) {
@@ -19,44 +13,48 @@ class StackStrategy implements PalindromeStrategy {
         }
         return true;
     }
-}
 
-// Context Class
-class PalindromeContext {
+    // Method 2: Stack Method
+    public static boolean stackMethod(String str) {
+        Stack<Character> stack = new Stack<>();
 
-    private PalindromeStrategy strategy;
+        for (char ch : str.toCharArray()) {
+            stack.push(ch);
+        }
 
-    public PalindromeContext(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+        for (char ch : str.toCharArray()) {
+            if (ch != stack.pop()) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    public boolean execute(String str) {
-        return strategy.check(str);
-    }
-}
-
-// Main Class
-public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("=== Simple Strategy Pattern Palindrome Checker ===");
+        System.out.println("=== Performance Comparison of Palindrome Algorithms ===");
         System.out.print("Enter a string: ");
         String input = sc.nextLine();
 
-        // Inject strategy
-        PalindromeStrategy strategy = new StackStrategy();
-        PalindromeContext context = new PalindromeContext(strategy);
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
 
-        boolean result = context.execute(input);
+        // Measure Loop Method
+        long start1 = System.nanoTime();
+        boolean result1 = loopMethod(processed);
+        long end1 = System.nanoTime();
 
-        if (result) {
-            System.out.println("Palindrome");
-        } else {
-            System.out.println("Not Palindrome");
-        }
+        // Measure Stack Method
+        long start2 = System.nanoTime();
+        boolean result2 = stackMethod(processed);
+        long end2 = System.nanoTime();
+
+        System.out.println("\nLoop Method Result: " + result1);
+        System.out.println("Loop Method Time: " + (end1 - start1) + " ns");
+
+        System.out.println("\nStack Method Result: " + result2);
+        System.out.println("Stack Method Time: " + (end2 - start2) + " ns");
 
         sc.close();
     }
