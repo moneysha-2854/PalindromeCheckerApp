@@ -1,43 +1,63 @@
 import java.util.Scanner;
 
-public class PalindromeCheckerApp {
+// Strategy Interface
+interface PalindromeStrategy {
+    boolean check(String str);
+}
 
-    // Method to check palindrome
-    public static boolean isPalindrome(String str) {
+// Simple Stack Strategy
+class StackStrategy implements PalindromeStrategy {
+    public boolean check(String str) {
 
-        int left = 0;
-        int right = str.length() - 1;
+        str = str.replaceAll("\\s+", "").toLowerCase();
 
-        while (left < right) {
-            if (str.charAt(left) != str.charAt(right)) {
+        int n = str.length();
+        for (int i = 0; i < n / 2; i++) {
+            if (str.charAt(i) != str.charAt(n - 1 - i)) {
                 return false;
             }
-            left++;
-            right--;
         }
-
         return true;
     }
+}
+
+// Context Class
+class PalindromeContext {
+
+    private PalindromeStrategy strategy;
+
+    public PalindromeContext(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean execute(String str) {
+        return strategy.check(str);
+    }
+}
+
+// Main Class
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-        System.out.println("=== Case-Insensitive & Space-Ignored Palindrome Checker ===");
+        System.out.println("=== Simple Strategy Pattern Palindrome Checker ===");
         System.out.print("Enter a string: ");
-        String input = scanner.nextLine();
+        String input = sc.nextLine();
 
-        // Normalize string: remove spaces and convert to lowercase
-        String processed = input.replaceAll("\\s+", "").toLowerCase();
+        // Inject strategy
+        PalindromeStrategy strategy = new StackStrategy();
+        PalindromeContext context = new PalindromeContext(strategy);
 
-        boolean result = isPalindrome(processed);
+        boolean result = context.execute(input);
 
         if (result) {
-            System.out.println("Result: The given string is a Palindrome.");
+            System.out.println("Palindrome");
         } else {
-            System.out.println("Result: The given string is NOT a Palindrome.");
+            System.out.println("Not Palindrome");
         }
 
-        scanner.close();
+        sc.close();
     }
 }
